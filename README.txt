@@ -13,7 +13,7 @@ Node version v17.3.x
 yarn install
 yarn run android
 
-
+Work through as many of those goals as possible:
 
 - Fix typescript warnings and errors in MultiPhotoCapture.tsx
 - Find out why the app fails when scanning errorCode.png, and fix the problem.
