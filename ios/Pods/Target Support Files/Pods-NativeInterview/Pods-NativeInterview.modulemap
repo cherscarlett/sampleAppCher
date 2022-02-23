@@ -1,6 +1,0 @@
-module Pods_NativeInterview {
-  umbrella header "Pods-NativeInterview-umbrella.h"
-
-  export *
-  module * { export * }
-}
