@@ -1,0 +1,6 @@
+module Pods_NativeInterview_NativeInterviewTests {
+  umbrella header "Pods-NativeInterview-NativeInterviewTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
