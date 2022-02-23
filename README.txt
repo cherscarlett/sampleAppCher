@@ -16,7 +16,7 @@ yarn run android
 
 
 
-- Fix lint warnings and lint errors in MultiPhotoCapture.tsx
+- Fix typescript warnings and errors in MultiPhotoCapture.tsx
 - Find out why the app fails when scanning errorCode.png, and fix the problem.
 - Fix the warning showing up when rendering the list of products.
 - Add touch to focus, when tapping on the camera:
