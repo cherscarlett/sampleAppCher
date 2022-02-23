@@ -26,5 +26,6 @@ Work through as many of those goals as possible:
 - (BONUS) Make the list of photo + lot numbers on the home page prettier:
   - add sensible margin vertically and horizontally between each rows.
   - make each item in a row, with lot number on the left, and photo on the right.
+  - Add a delete icon to each row, clicking on it should remove the item and associated files.
 
 
