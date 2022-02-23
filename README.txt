@@ -1,6 +1,6 @@
 The intern is gone and left an unfinished app behind them.
 Your boss comes around and says, "We need to demo this tomorrow", they say, "do you think you could make it work?".
-"No problem, boss", you answer. "It should be a piece of cake", you think. But you haven't looked at the code yet.
+"No problem", you answer. "It should be a piece of cake", you think. But you haven't looked at the code yet.
 
 The app's goal is to make sure each product coming out of the door has been properly labelled with
 a "Lot number". The employees will scan a QR code on the product, which contains the lot number, then 
