@@ -1,6 +1,6 @@
 The intern is gone and left an unfinished app behind them.
-Your both is breathing down you neck. "We need this tomorrow", he says, "and in tip top shape!".
-You salute him and answer "SIR! YES! SIR!", while day dreaming about the upcoming weekend.
+Your both is breathing down you neck. "We need this tomorrow", they say, "and in tip top shape!".
+You salute and answer "SIR! YES! SIR!", while day dreaming about the upcoming weekend.
 "It should be a piece of cake", you think. But you haven't looked at the code yet.
 
 The app's goal is to make sure each product coming out of the door has been properly labelled with
