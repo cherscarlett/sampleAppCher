@@ -21,7 +21,8 @@ const RDT_HEIGHT_PCT = 0.8;
 
 function pullLotNumberFromBarcode(barcodeData: string): string | undefined {
   const dataParts = (barcodeData || '').split(',');
-  const lotNumber = dataParts[1];
+  const lotNumber = dataParts[1] || '';
+
   if (lotNumber.length > 1) {
     return lotNumber;
   }
