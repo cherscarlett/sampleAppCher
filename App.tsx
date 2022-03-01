@@ -10,11 +10,13 @@
 
 import React from 'react';
 import {SafeAreaView, StatusBar, useColorScheme, View} from 'react-native';
-
+import { PersistGate } from 'redux-persist/integration/react';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import PhotoCaptureView from './src/ui/PhotoCaptureView';
 import {Provider} from 'react-redux';
 import {store} from './src/store';
+import { persistStore } from 'redux-persist';
+
 import {NativeRouter, Route, Routes} from 'react-router-native';
 import PhotoListView from './src/ui/PhotoListView';
 
@@ -23,23 +25,27 @@ const backgroundStyle = {
   flex: 1,
 };
 
+let persistor = persistStore(store);
+
 const App = () => {
   return (
     <NativeRouter>
       <Provider store={store}>
-        <SafeAreaView style={backgroundStyle}>
-          <StatusBar barStyle={'light-content'} />
-          <View
-            style={{
-              backgroundColor: Colors.white,
-              flex: 1,
-            }}>
-            <Routes>
-              <Route path="/" element={<PhotoListView />} />
-              <Route path="/capture" element={<PhotoCaptureView />} />
-            </Routes>
-          </View>
-        </SafeAreaView>
+        <PersistGate loading={null} persistor={persistor}>
+          <SafeAreaView style={backgroundStyle}>
+            <StatusBar barStyle={'light-content'} />
+            <View
+              style={{
+                backgroundColor: Colors.white,
+                flex: 1,
+              }}>
+              <Routes>
+                <Route path="/" element={<PhotoListView />} />
+                <Route path="/capture" element={<PhotoCaptureView />} />
+              </Routes>
+            </View>
+          </SafeAreaView>
+        </PersistGate>
       </Provider>
     </NativeRouter>
   );
