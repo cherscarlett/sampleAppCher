@@ -20,10 +20,15 @@ export const photoSlice = createSlice({
       // immutable state based off those changes
       state.value.push(action.payload);
     },
+    deletePhoto: (state: PhotosState, action: PayloadAction<PhotoItem>) => {
+      state.value = state.value.filter(e => {
+        return e.photoFilePath !==  action.payload.photoFilePath
+      });
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const {addPhoto} = photoSlice.actions;
+export const {addPhoto, deletePhoto} = photoSlice.actions;
 
 export default photoSlice.reducer;
