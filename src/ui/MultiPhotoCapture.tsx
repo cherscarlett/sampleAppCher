@@ -52,11 +52,6 @@ export enum AnimState {
   ScanSuccess = 'ScanSuccess',
 }
 
-interface AutoFocusPoint {
-  x: number | null;
-  y: number | null;
-}
-
 interface State {
   cameraReady: boolean;
   capturing: boolean;
@@ -444,7 +439,7 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     );
   };
 
-  _handleTap = ({x, y}: AutoFocusPoint) => {
+  _handleTap = ({x, y}: Point) => {
     if (x && y) {
       this.setState({autoFocusPoint: {x, y}});
     }
