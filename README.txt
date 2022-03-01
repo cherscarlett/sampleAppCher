@@ -18,7 +18,7 @@ Work through as many of these goals as you can:
   - a circle 64px in diameter should appear for 2 seconds at the tap location.
   - the camera should focus on the related area. See documentation here: 
     https://react-native-camera.github.io/react-native-camera/docs/rncamera#autofocuspointofinterest
-- Make the redux store persistent (right now it's only in memory, so it's cleared on restart).
+- [x] Make the redux store persistent (right now it's only in memory, so it's cleared on restart).
 - Make the list of photo + lot numbers on the home page prettier:
   - [x] add sensible margin vertically and horizontally between each rows.
   - [x] make each item in a row, with lot number on the left, and photo on the right.
