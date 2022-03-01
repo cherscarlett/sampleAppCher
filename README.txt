@@ -11,17 +11,17 @@ yarn run android
 
 
 Work through as many of these goals as you can:
-- Fix lint warnings and lint errors in MultiPhotoCapture.tsx
-- Find out why the app fails when scanning errorCode.png, and fix the problem.
-- Fix the warning showing up when rendering the list of products.
+- [x] Fix lint warnings and lint errors in MultiPhotoCapture.tsx
+- [x] Find out why the app fails when scanning errorCode.png, and fix the problem.
+- [x] Fix the warning showing up when rendering the list of products.
 - Add "tap to focus" when tapping on the camera view:
   - a circle 64px in diameter should appear for 2 seconds at the tap location.
   - the camera should focus on the related area. See documentation here: 
     https://react-native-camera.github.io/react-native-camera/docs/rncamera#autofocuspointofinterest
 - Make the redux store persistent (right now it's only in memory, so it's cleared on restart).
 - Make the list of photo + lot numbers on the home page prettier:
-  - add sensible margin vertically and horizontally between each rows.
-  - make each item in a row, with lot number on the left, and photo on the right.
-  - Add a delete icon to each row, clicking on it should remove the item and associated files.
+  - [x] add sensible margin vertically and horizontally between each rows.
+  - [x] make each item in a row, with lot number on the left, and photo on the right.
+  - [x] Add a delete icon to each row, clicking on it should remove the item and associated files.
 
 
