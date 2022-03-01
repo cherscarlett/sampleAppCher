@@ -14,6 +14,7 @@ import {
   BarCodeReadEvent,
   RNCamera,
   TakePictureResponse,
+  Point,
 } from 'react-native-camera';
 import {
   BarcodeCapture,
@@ -51,6 +52,11 @@ export enum AnimState {
   ScanSuccess = 'ScanSuccess',
 }
 
+interface AutoFocusPoint {
+  x: number | null;
+  y: number | null;
+}
+
 interface State {
   cameraReady: boolean;
   capturing: boolean;
@@ -59,9 +65,14 @@ interface State {
   barcodeScanSuccessful: boolean;
   previewPaused: boolean;
   cameraFlashState: FlashStateType;
+  autoFocusPoint: Point | undefined;
 }
 
-const LABELS = {
+type Label = {
+  [key: string]: string
+}
+
+const LABELS: Label = {
   permissionTitle: 'Camera Permissions',
   permissionMsg: 'We need you to give us these permissions',
   ok: 'Ok',
@@ -83,6 +94,7 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     barcodeScanSuccessful: false,
     previewPaused: false,
     cameraFlashState: FlashStateType.on,
+    autoFocusPoint: undefined,
   };
   _camera: any;
   _tookPictureAnim = new Animated.Value(0);
@@ -96,7 +108,7 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     buttonPositive: t('common:button:ok'),
     buttonNegative: t('common:button:cancel'),
   };
-  _gracePeriodTimer: number | undefined;
+  _gracePeriodTimer: ReturnType<typeof setTimeout> | undefined;
   _useOutlineSuccessColor = false;
 
   constructor(props: Props) {
@@ -432,6 +444,12 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     );
   };
 
+  _handleTap = ({x, y}: AutoFocusPoint) => {
+    if (x && y) {
+      this.setState({autoFocusPoint: {x, y}});
+    }
+  }
+
   render() {
     const captureStep = this._getCaptureStep();
     const {
@@ -441,11 +459,13 @@ class MultiPhotoCapture extends React.Component<Props, State> {
       captureAreaHeightPercent,
       captureAreaWidthPercent,
     } = captureStep;
-    const {cameraReady, capturing} = this.state;
+    const {cameraReady, capturing, autoFocusPoint} = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.camera}>
           <RNCamera
+            onTap={this._handleTap}
+            autoFocusPointOfInterest={autoFocusPoint}
             androidCameraPermissionOptions={this._permissionVariables}
             captureAudio={false}
             flashMode={flashMode && this._getFlashMode(flashMode)}
