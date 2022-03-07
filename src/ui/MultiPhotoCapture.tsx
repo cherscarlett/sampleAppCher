@@ -6,6 +6,9 @@
 import {
   Animated,
   Dimensions,
+  GestureResponderEvent,
+  LayoutChangeEvent,
+  NativeTouchEvent,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -52,6 +55,11 @@ export enum AnimState {
   ScanSuccess = 'ScanSuccess',
 }
 
+interface FocusCirclePosition {
+  top: number,
+  left: number,
+}
+
 interface State {
   cameraReady: boolean;
   capturing: boolean;
@@ -61,6 +69,9 @@ interface State {
   previewPaused: boolean;
   cameraFlashState: FlashStateType;
   autoFocusPoint: Point | undefined;
+  cameraHeight: number;
+  autoFocusIndicatorVisible: boolean;
+  focusCirclePosition: FocusCirclePosition
 }
 
 type Label = {
@@ -90,6 +101,9 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     previewPaused: false,
     cameraFlashState: FlashStateType.on,
     autoFocusPoint: undefined,
+    cameraHeight: height,
+    autoFocusIndicatorVisible: false,
+    focusCirclePosition: {top: 0, left: 0},
   };
   _camera: any;
   _tookPictureAnim = new Animated.Value(0);
@@ -439,10 +453,38 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     );
   };
 
-  _handleTap = ({x, y}: Point) => {
+  _handleTap = () => {
+    // don't know if this works
+    
+    // if (x && y) {
+
+    //   //this.setState({autoFocusPoint: {x, y}});
+    // }
+
+    // this.setState({autoFocusIndicatorVisible: true});
+
+    // setTimeout(() => this.setState({autoFocusIndicatorVisible: false}),
+    //   2000
+    // )
+  }
+
+  _handlePress = (event: GestureResponderEvent) => {
+    const { locationX: x, locationY: y} = event.nativeEvent;
+
     if (x && y) {
-      this.setState({autoFocusPoint: {x, y}});
+      this.setState({focusCirclePosition: {top: y, left: x}});
+      this.setState({autoFocusIndicatorVisible: true});
+      this.setState({autoFocusPoint: {x: x/width, y: y/height}});
+
+      setTimeout(() => this.setState({autoFocusIndicatorVisible: false}),
+        2000
+      );
     }
+  }
+
+  _setCameraHeight = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    this.setState({cameraHeight: height});
   }
 
   render() {
@@ -457,7 +499,7 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     const {cameraReady, capturing, autoFocusPoint} = this.state;
     return (
       <View style={styles.container}>
-        <View style={styles.camera}>
+        <View style={styles.camera} onLayout={this._setCameraHeight}>
           <RNCamera
             onTap={this._handleTap}
             autoFocusPointOfInterest={autoFocusPoint}
@@ -477,7 +519,8 @@ class MultiPhotoCapture extends React.Component<Props, State> {
                 ? [captureStep.barcodeType]
                 : undefined
             }
-          />
+          >
+          </RNCamera>
         </View>
         {showOutline && (
           <CaptureOutline
@@ -515,6 +558,21 @@ class MultiPhotoCapture extends React.Component<Props, State> {
             ]}
           />
         )}
+
+        <TouchableOpacity style={styles.fakeCameraArea} onPress={this._handlePress}>
+          {this.state.autoFocusIndicatorVisible && 
+            <View
+              style={[styles.focusCircle, 
+                    {
+                      position: 'absolute', 
+                      left: this.state.focusCirclePosition.left, 
+                      top: this.state.focusCirclePosition.top,
+                      marginLeft: FocusCircleHeight/2 * -1,
+                      marginTop: FocusCircleHeight/2 * -1,
+                    }]} 
+            />
+          }
+        </TouchableOpacity>
       </View>
     );
   }
@@ -523,16 +581,27 @@ class MultiPhotoCapture extends React.Component<Props, State> {
 export default MultiPhotoCapture;
 
 const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
+
+const FocusCircleHeight = 64;
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
     flex: 1,
-    height: Dimensions.get('window').height,
+    height: height,
     flexDirection: 'column',
   },
   camera: {
     width: '100%',
+    height: (width * 4) / 3,
+  },
+  fakeCameraArea: {
+    justifyContent: 'center',
+    left: 0,
+    right: 0,
+    position: 'absolute',
+    top: 0,
     height: (width * 4) / 3,
   },
   overlayContainer: {
@@ -606,5 +675,13 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     height: 40,
     width: 40,
+  },
+  focusCircle: {
+    backgroundColor: 'transparent',
+    borderRadius: FocusCircleHeight/2,
+    borderWidth: 2,
+    borderColor: 'white',
+    height: FocusCircleHeight,
+    width: FocusCircleHeight,
   },
 });
