@@ -8,7 +8,6 @@ import {
   Dimensions,
   GestureResponderEvent,
   LayoutChangeEvent,
-  NativeTouchEvent,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -55,9 +54,10 @@ export enum AnimState {
   ScanSuccess = 'ScanSuccess',
 }
 
-interface FocusCirclePosition {
+interface FocusCircle {
   top: number,
   left: number,
+  id: string,
 }
 
 interface State {
@@ -70,8 +70,8 @@ interface State {
   cameraFlashState: FlashStateType;
   autoFocusPoint: Point | undefined;
   cameraHeight: number;
-  autoFocusIndicatorVisible: boolean;
-  focusCirclePosition: FocusCirclePosition
+  cameraWidth: number;
+  focusCircles: FocusCircle[];
 }
 
 type Label = {
@@ -102,8 +102,8 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     cameraFlashState: FlashStateType.on,
     autoFocusPoint: undefined,
     cameraHeight: height,
-    autoFocusIndicatorVisible: false,
-    focusCirclePosition: {top: 0, left: 0},
+    cameraWidth: width,
+    focusCircles: [],
   };
   _camera: any;
   _tookPictureAnim = new Animated.Value(0);
@@ -456,20 +456,32 @@ class MultiPhotoCapture extends React.Component<Props, State> {
   _handlePress = (event: GestureResponderEvent) => {
     const { locationX: x, locationY: y} = event.nativeEvent;
 
-    if (x && y) {
-      this.setState({focusCirclePosition: {top: y, left: x}});
-      this.setState({autoFocusIndicatorVisible: true});
-      this.setState({autoFocusPoint: {x: x/width, y: y/height}});
+    const currentCircle = {top: y, left: x, id: `${y}-${x}`};
 
-      setTimeout(() => this.setState({autoFocusIndicatorVisible: false}),
-        2000
+    if (x && y) {
+      this.setState({focusCircles: [...this.state.focusCircles, currentCircle]});
+
+      if (height > width) {
+        // autoFocusPointOfInterest values are always landscape-based, we must transform the touch point for the autoFocus to focus the correct position
+
+        this.setState({autoFocusPoint: {x: y/height, y: (x/width * -1) + 1}});
+      } else {
+        this.setState({autoFocusPoint: {x: x/width, y: y/height}});
+      }
+
+      const remainingCircles = this.state.focusCircles.filter((circle: FocusCircle) => {
+        return currentCircle.id === circle.id;
+      });
+
+      setTimeout(() => {this.setState({focusCircles: remainingCircles})},
+        4000
       );
     }
   }
 
   _setCameraHeight = (event: LayoutChangeEvent) => {
-    const { height } = event.nativeEvent.layout;
-    this.setState({cameraHeight: height});
+    const { width, height } = event.nativeEvent.layout;
+    this.setState({cameraHeight: height, cameraWidth: width});
   }
 
   render() {
@@ -544,18 +556,15 @@ class MultiPhotoCapture extends React.Component<Props, State> {
         )}
 
         <TouchableOpacity style={styles.fakeCameraArea} onPress={this._handlePress}>
-          {this.state.autoFocusIndicatorVisible && 
-            <View
+          {this.state.focusCircles.map((circle: FocusCircle) => {
+            return (<View key={circle.id}
               style={[styles.focusCircle, 
-                    {
-                      position: 'absolute', 
-                      left: this.state.focusCirclePosition.left, 
-                      top: this.state.focusCirclePosition.top,
-                      marginLeft: FocusCircleHeight/2 * -1,
-                      marginTop: FocusCircleHeight/2 * -1,
-                    }]} 
-            />
-          }
+                  {
+                    left: circle.left, 
+                    top: circle.top,
+                  }]} 
+            />)
+          })}
         </TouchableOpacity>
       </View>
     );
@@ -667,5 +676,8 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     height: FocusCircleHeight,
     width: FocusCircleHeight,
+    position: 'absolute', 
+    marginLeft: FocusCircleHeight/2 * -1,
+    marginTop: FocusCircleHeight/2 * -1,
   },
 });
