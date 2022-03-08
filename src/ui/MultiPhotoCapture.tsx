@@ -29,6 +29,7 @@ import {GUTTER} from '../styles';
 
 import ActivityIndicator from './ActivityIndicator';
 import CaptureOutline from './CaptureOutline';
+import FocusCircle from './FocusCircle';
 import DeviceInfo from 'react-native-device-info';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import React from 'react';
@@ -54,7 +55,7 @@ export enum AnimState {
   ScanSuccess = 'ScanSuccess',
 }
 
-interface FocusCircle {
+interface FocusCircleType {
   top: number,
   left: number,
   id: string,
@@ -71,7 +72,7 @@ interface State {
   autoFocusPoint: Point | undefined;
   cameraHeight: number;
   cameraWidth: number;
-  focusCircles: FocusCircle[];
+  focusCircles: FocusCircleType[];
 }
 
 type Label = {
@@ -458,6 +459,10 @@ class MultiPhotoCapture extends React.Component<Props, State> {
 
     const currentCircle = {top: y, left: x, id: `${y}-${x}`};
 
+    if (this.state.focusCircles.includes(currentCircle)) {
+      return;
+    }
+
     if (x && y) {
       this.setState({focusCircles: [...this.state.focusCircles, currentCircle]});
 
@@ -468,20 +473,16 @@ class MultiPhotoCapture extends React.Component<Props, State> {
       } else {
         this.setState({autoFocusPoint: {x: x/width, y: y/height}});
       }
-
-      const remainingCircles = this.state.focusCircles.filter((circle: FocusCircle) => {
-        return currentCircle.id === circle.id;
-      });
-
-      setTimeout(() => {this.setState({focusCircles: remainingCircles})},
-        4000
-      );
     }
   }
 
   _setCameraHeight = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
     this.setState({cameraHeight: height, cameraWidth: width});
+  }
+
+  _handleRemove = (id: string) => {
+    this.setState({focusCircles: this.state.focusCircles.filter(circle => id !== circle.id)});
   }
 
   render() {
@@ -555,17 +556,11 @@ class MultiPhotoCapture extends React.Component<Props, State> {
           />
         )}
 
-        <TouchableOpacity style={styles.fakeCameraArea} onPress={this._handlePress}>
-          {this.state.focusCircles.map((circle: FocusCircle) => {
-            return (<View key={circle.id}
-              style={[styles.focusCircle, 
-                  {
-                    left: circle.left, 
-                    top: circle.top,
-                  }]} 
-            />)
-          })}
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.fakeCameraArea} onPress={this._handlePress} />
+        
+        {this.state.focusCircles.map((circle: FocusCircleType) => {
+            return (<FocusCircle onAnimationEnd={this._handleRemove} id={circle.id} left={circle.left} top={circle.top} key={circle.id} />)
+        })}
       </View>
     );
   }
@@ -575,8 +570,6 @@ export default MultiPhotoCapture;
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-
-const FocusCircleHeight = 64;
 
 const styles = StyleSheet.create({
   container: {
@@ -668,16 +661,5 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     height: 40,
     width: 40,
-  },
-  focusCircle: {
-    backgroundColor: 'transparent',
-    borderRadius: FocusCircleHeight/2,
-    borderWidth: 2,
-    borderColor: 'white',
-    height: FocusCircleHeight,
-    width: FocusCircleHeight,
-    position: 'absolute', 
-    marginLeft: FocusCircleHeight/2 * -1,
-    marginTop: FocusCircleHeight/2 * -1,
   },
 });
