@@ -453,21 +453,6 @@ class MultiPhotoCapture extends React.Component<Props, State> {
     );
   };
 
-  _handleTap = () => {
-    // don't know if this works
-    
-    // if (x && y) {
-
-    //   //this.setState({autoFocusPoint: {x, y}});
-    // }
-
-    // this.setState({autoFocusIndicatorVisible: true});
-
-    // setTimeout(() => this.setState({autoFocusIndicatorVisible: false}),
-    //   2000
-    // )
-  }
-
   _handlePress = (event: GestureResponderEvent) => {
     const { locationX: x, locationY: y} = event.nativeEvent;
 
@@ -501,7 +486,6 @@ class MultiPhotoCapture extends React.Component<Props, State> {
       <View style={styles.container}>
         <View style={styles.camera} onLayout={this._setCameraHeight}>
           <RNCamera
-            onTap={this._handleTap}
             autoFocusPointOfInterest={autoFocusPoint}
             androidCameraPermissionOptions={this._permissionVariables}
             captureAudio={false}
