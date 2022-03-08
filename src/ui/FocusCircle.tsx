@@ -21,7 +21,7 @@ interface State {
 
 class FocusCircle extends React.Component<Props, State> {
     state: State = {
-        timer: 3,
+        timer: 2,
         intervalId: setInterval(() => {}),
         animation : new Animated.Value(0),
 };
